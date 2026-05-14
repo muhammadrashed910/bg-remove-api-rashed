@@ -1,10 +1,13 @@
 from fastapi import FastAPI, UploadFile, File, Header, HTTPException
 from fastapi.responses import Response
-from rembg import remove
+from rembg import remove, new_session
 
 app = FastAPI()
 
 API_KEY = "rashed_unlimited_key_2026"
+
+# ছোট model, Railway free/trial এ কম crash করবে
+session = new_session("u2netp")
 
 @app.get("/")
 async def home():
@@ -19,6 +22,6 @@ async def remove_bg(
         raise HTTPException(status_code=401, detail="Invalid API Key")
 
     input_image = await image.read()
-    output_image = remove(input_image)
+    output_image = remove(input_image, session=session)
 
     return Response(content=output_image, media_type="image/png")
