@@ -7,7 +7,7 @@ app = FastAPI()
 API_KEY = "rashed_unlimited_key_2026"
 
 # ছোট model, Railway free/trial এ কম crash করবে
-session = new_session("u2net")
+session = new_session("isnet-general-use")
 
 @app.get("/")
 async def home():
