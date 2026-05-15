@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Header, HTTPException
 from fastapi.responses import Response
 import requests
 import os
-import tempfile
+import base64
 
 app = FastAPI()
 
@@ -26,24 +26,23 @@ async def remove_bg(
 
     input_image = await image.read()
 
-    # temp file save
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-        tmp.write(input_image)
-        temp_path = tmp.name
-
-    # Pixelcut upload endpoint
-    files = {
-        "image": open(temp_path, "rb")
-    }
+    image_base64 = base64.b64encode(input_image).decode("utf-8")
 
     headers = {
-        "X-API-KEY": PIXELCUT_API_KEY
+        "X-API-KEY": PIXELCUT_API_KEY,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    json_data = {
+        "image_base64": image_base64,
+        "format": "png"
     }
 
     response = requests.post(
         "https://api.developer.pixelcut.ai/v1/remove-background",
         headers=headers,
-        files=files
+        json=json_data
     )
 
     if response.status_code != 200:
@@ -52,7 +51,16 @@ async def remove_bg(
             detail=response.text
         )
 
+    result = response.json()
+
+    output_url = result.get("result_url")
+
+    if not output_url:
+        raise HTTPException(status_code=500, detail="No output image")
+
+    final_image = requests.get(output_url)
+
     return Response(
-        content=response.content,
+        content=final_image.content,
         media_type="image/png"
     )
