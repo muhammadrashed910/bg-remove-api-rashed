@@ -6,7 +6,10 @@ import os
 
 app = FastAPI()
 
-PIXELCUT_API_KEY = os.getenv("PIXELCUT_API_KEY")
+# Pixelcut API Key
+PIXELCUT_API_KEY = "yDYS9v5GN3w1fZ8co5UY7oDB"
+
+# App API Key
 APP_API_KEY = os.getenv("APP_API_KEY")
 
 # fallback unlimited local model
@@ -54,14 +57,12 @@ async def remove_bg(
             print("Pixelcut status:", pixelcut_response.status_code)
             print("Pixelcut response:", pixelcut_response.text[:300])
 
-            # Pixelcut success
             if pixelcut_response.status_code == 200:
                 return Response(
                     content=pixelcut_response.content,
                     media_type="image/png"
                 )
 
-            # Pixelcut credit/payment/rate-limit/server issue হলে fallback হবে
             if pixelcut_response.status_code in [400, 401, 402, 403, 429, 500, 502, 503, 504]:
                 print("Pixelcut failed. Falling back to rembg...")
 
