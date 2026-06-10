@@ -7,7 +7,7 @@ import os
 app = FastAPI()
 
 # Pixelcut API Key
-PIXELCUT_API_KEY = "yDYS9v5GN3w1fZ8co5UY7oDB"
+PIXELCUT_API_KEY = "6G2tveegcCtEvSSsLZ9g8s3M"
 
 # App API Key
 APP_API_KEY = os.getenv("APP_API_KEY")
